@@ -3,9 +3,9 @@
 set -euo pipefail
 
 # TODO: Ensure this is the correct GitHub homepage where releases can be downloaded for knative-func.
-GH_REPO="https://github.com/tomaszkiewicz/asdf-plugin-knative-func"
-TOOL_NAME="knative-func"
-TOOL_TEST="func --version"
+GH_REPO="https://github.com/knative/func"
+TOOL_NAME="func"
+TOOL_TEST="func version"
 
 fail() {
 	echo -e "asdf-$TOOL_NAME: $*"
@@ -27,7 +27,9 @@ sort_versions() {
 list_github_tags() {
 	git ls-remote --tags --refs "$GH_REPO" |
 		grep -o 'refs/tags/.*' | cut -d/ -f3- |
-		sed 's/^v//' # NOTE: You might want to adapt this sed to remove non-version strings from tags
+		sed 's/^knative-v//' |
+    sed 's/^v//'
+    # NOTE: You might want to adapt this sed to remove non-version strings from tags
 }
 
 list_all_versions() {
@@ -42,9 +44,10 @@ download_release() {
 	filename="$2"
 
 	# TODO: Adapt the release URL convention for knative-func
-	url="$GH_REPO/archive/v${version}.tar.gz"
+  arch=$(uname -p | sed -e "s/x86_64/amd64/" -e "s/aarch64/arm64/" -e "s/unknown/amd64/")
+  url="$GH_REPO/releases/download/knative-v${version}/kn_linux_${arch}"
 
-	echo "* Downloading $TOOL_NAME release $version..."
+	echo "* Downloading $TOOL_NAME release $version ($arch)..."
 	curl "${curl_opts[@]}" -o "$filename" -C - "$url" || fail "Could not download $url"
 }
 
@@ -59,9 +62,9 @@ install_version() {
 
 	(
 		mkdir -p "$install_path"
-		cp -r "$ASDF_DOWNLOAD_PATH"/* "$install_path"
+		cp -r "$ASDF_DOWNLOAD_PATH/func_*" "$install_path/func"
+    chmod a+x "$install_path/func"
 
-		# TODO: Assert knative-func executable exists.
 		local tool_cmd
 		tool_cmd="$(echo "$TOOL_TEST" | cut -d' ' -f1)"
 		test -x "$install_path/$tool_cmd" || fail "Expected $install_path/$tool_cmd to be executable."
