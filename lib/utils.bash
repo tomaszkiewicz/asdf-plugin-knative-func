@@ -45,7 +45,7 @@ download_release() {
 
 	# TODO: Adapt the release URL convention for knative-func
   arch=$(uname -p | sed -e "s/x86_64/amd64/" -e "s/aarch64/arm64/" -e "s/unknown/amd64/")
-  url="$GH_REPO/releases/download/knative-v${version}/kn_linux_${arch}"
+  url="$GH_REPO/releases/download/knative-v${version}/func_linux_${arch}"
 
 	echo "* Downloading $TOOL_NAME release $version ($arch)..."
 	curl "${curl_opts[@]}" -o "$filename" -C - "$url" || fail "Could not download $url"
