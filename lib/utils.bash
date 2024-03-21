@@ -62,7 +62,7 @@ install_version() {
 
 	(
 		mkdir -p "$install_path"
-		cp -r "$ASDF_DOWNLOAD_PATH/func_*" "$install_path/func"
+		cp -r "$ASDF_DOWNLOAD_PATH/func-*" "$install_path/func"
     chmod a+x "$install_path/func"
 
 		local tool_cmd
