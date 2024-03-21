@@ -27,6 +27,7 @@ sort_versions() {
 list_github_tags() {
 	git ls-remote --tags --refs "$GH_REPO" |
 		grep -o 'refs/tags/.*' | cut -d/ -f3- |
+    grep knative |
 		sed 's/^knative-v//' |
     sed 's/^v//'
     # NOTE: You might want to adapt this sed to remove non-version strings from tags
@@ -62,7 +63,7 @@ install_version() {
 
 	(
 		mkdir -p "$install_path"
-		cp -r "$ASDF_DOWNLOAD_PATH/func-*" "$install_path/func"
+		cp -vr "$ASDF_DOWNLOAD_PATH"/func* "$install_path/func"
     chmod a+x "$install_path/func"
 
 		local tool_cmd
